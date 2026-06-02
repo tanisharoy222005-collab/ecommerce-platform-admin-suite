@@ -677,3 +677,29 @@ input[type="radio"]{
   justify-content:center;
   margin-top:30px;
 }
+.login-card{
+  max-width:500px;
+  margin:80px auto;
+  background:var(--card);
+  padding:40px;
+  border-radius:20px;
+}
+
+.login-card input{
+  width:100%;
+  padding:14px;
+  margin-top:15px;
+  border:none;
+  border-radius:10px;
+  background:#111827;
+  color:white;
+}
+
+.login-card button{
+  width:100%;
+  margin-top:20px;
+}
+
+.recharts-responsive-container{
+  margin-top:20px;
+}
