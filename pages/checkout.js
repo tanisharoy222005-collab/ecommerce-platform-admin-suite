@@ -1,15 +1,17 @@
+import { useState } from "react";
 import Layout from "../components/Layout";
 import { useStore } from "../context/StoreContext";
 
 export default function Checkout() {
 
-  const {
-    cart,
-    checkout
-  } = useStore();
+  const { cart } = useStore();
+
+  const [paymentMethod, setPaymentMethod] =
+    useState("upi");
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price,
+    (sum, item) =>
+      sum + item.price * item.quantity,
     0
   );
 
@@ -17,10 +19,27 @@ export default function Checkout() {
 
   const total = subtotal + tax;
 
+  const proceedToPayment = () => {
+
+    if (paymentMethod === "upi") {
+      window.location.href =
+        `/payment?method=upi&amount=${total}`;
+    }
+
+    if (paymentMethod === "card") {
+      window.location.href =
+        `/payment?method=card&amount=${total}`;
+    }
+  };
+
   return (
     <Layout>
 
-      <h1 style={{ marginBottom: "30px" }}>
+      <h1
+        style={{
+          marginBottom: "30px"
+        }}
+      >
         Secure Checkout
       </h1>
 
@@ -48,23 +67,64 @@ export default function Checkout() {
 
           <h2
             style={{
-              marginTop: "25px"
+              marginTop: "30px"
             }}
           >
             Payment Method
           </h2>
 
-          <input
-            placeholder="Card Number"
-          />
+          <div
+            style={{
+              marginTop: "20px"
+            }}
+          >
 
-          <input
-            placeholder="Expiry Date"
-          />
+            <label
+              style={{
+                display: "block",
+                marginBottom: "15px"
+              }}
+            >
+              <input
+                type="radio"
+                checked={
+                  paymentMethod ===
+                  "upi"
+                }
+                onChange={() =>
+                  setPaymentMethod(
+                    "upi"
+                  )
+                }
+              />
 
-          <input
-            placeholder="CVV"
-          />
+              {" "}
+              UPI Payment
+            </label>
+
+            <label
+              style={{
+                display: "block"
+              }}
+            >
+              <input
+                type="radio"
+                checked={
+                  paymentMethod ===
+                  "card"
+                }
+                onChange={() =>
+                  setPaymentMethod(
+                    "card"
+                  )
+                }
+              />
+
+              {" "}
+              Credit / Debit Card
+            </label>
+
+          </div>
 
         </div>
 
@@ -74,22 +134,30 @@ export default function Checkout() {
 
           <div className="summary-row">
             <span>Items</span>
-            <span>{cart.length}</span>
+            <span>
+              {cart.length}
+            </span>
           </div>
 
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>${subtotal}</span>
+            <span>
+              ₹{subtotal.toFixed(2)}
+            </span>
           </div>
 
           <div className="summary-row">
             <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>
+              ₹{tax.toFixed(2)}
+            </span>
           </div>
 
           <div className="summary-row total-row">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>
+              ₹{total.toFixed(2)}
+            </span>
           </div>
 
           <button
@@ -98,12 +166,11 @@ export default function Checkout() {
               width: "100%",
               marginTop: "20px"
             }}
-            onClick={() =>
-  (window.location.href =
-    "/payment")
-}
+            onClick={
+              proceedToPayment
+            }
           >
-            Place Order
+            Proceed To Payment
           </button>
 
         </div>
