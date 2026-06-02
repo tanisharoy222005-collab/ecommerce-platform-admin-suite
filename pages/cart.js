@@ -10,7 +10,7 @@ export default function Cart() {
     removeFromCart,
   } = useStore();
 
-  // ✅ subtotal with quantity
+  // ✅ subtotal (quantity-safe)
   const subtotal = cart.reduce(
     (sum, item) =>
       sum + item.price * (item.quantity || 1),
@@ -20,6 +20,12 @@ export default function Cart() {
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
+  // ✅ total item count
+  const totalItems = cart.reduce(
+    (sum, item) => sum + (item.quantity || 1),
+    0
+  );
+
   return (
     <Layout>
       <h1 style={{ marginBottom: "30px" }}>
@@ -28,7 +34,7 @@ export default function Cart() {
 
       <div className="cart-layout">
 
-        {/* LEFT SIDE - CART ITEMS */}
+        {/* LEFT SIDE - ITEMS */}
         <div>
 
           {cart.length === 0 ? (
@@ -58,18 +64,34 @@ export default function Cart() {
                     marginTop: "10px",
                   }}
                 >
+                  {/* MINUS */}
                   <button
                     onClick={() =>
                       decreaseQty(item.id)
                     }
+                    disabled={
+                      (item.quantity || 1) <= 1
+                    }
+                    style={{
+                      opacity:
+                        (item.quantity || 1) <= 1
+                          ? 0.4
+                          : 1,
+                      cursor:
+                        (item.quantity || 1) <= 1
+                          ? "not-allowed"
+                          : "pointer",
+                    }}
                   >
                     −
                   </button>
 
+                  {/* QTY */}
                   <span>
                     {item.quantity || 1}
                   </span>
 
+                  {/* PLUS */}
                   <button
                     onClick={() =>
                       increaseQty(item.id)
@@ -78,6 +100,7 @@ export default function Cart() {
                     +
                   </button>
 
+                  {/* REMOVE */}
                   <button
                     onClick={() =>
                       removeFromCart(item.id)
@@ -103,14 +126,7 @@ export default function Cart() {
 
           <div className="summary-row">
             <span>Items</span>
-            <span>
-              {cart.reduce(
-                (sum, item) =>
-                  sum +
-                  (item.quantity || 1),
-                0
-              )}
-            </span>
+            <span>{totalItems}</span>
           </div>
 
           <div className="summary-row">
@@ -121,7 +137,7 @@ export default function Cart() {
           </div>
 
           <div className="summary-row">
-            <span>Tax</span>
+            <span>Tax (10%)</span>
             <span>
               ${tax.toFixed(2)}
             </span>
