@@ -98,7 +98,10 @@ export default function Checkout() {
               width: "100%",
               marginTop: "20px"
             }}
-            onClick={checkout}
+            onClick={() =>
+  (window.location.href =
+    "/payment")
+}
           >
             Place Order
           </button>
