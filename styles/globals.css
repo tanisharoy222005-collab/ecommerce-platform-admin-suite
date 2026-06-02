@@ -269,6 +269,20 @@ a{
 .cart-item:hover{
   transform:translateY(-4px);
 }
+.cart-item {
+  transition: all 0.2s ease-in-out;
+}
+
+.cart-item span {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+  transition: transform 0.15s ease;
+}
+
+.cart-item span:active {
+  transform: scale(1.2);
+}
 
 .order-summary{
   border:1px solid var(--border);
