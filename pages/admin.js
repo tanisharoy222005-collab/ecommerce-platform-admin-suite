@@ -1,169 +1,147 @@
 import Layout from "../components/Layout";
 import { useStore } from "../context/StoreContext";
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts";
+
 export default function Admin() {
 
   const { orders } = useStore();
 
   const revenue = orders.reduce(
-    (sum, order) => sum + order.total,
-    0
-  );
-
-  const productsSold = orders.reduce(
     (sum, order) =>
-      sum + order.items.length,
+      sum + order.total,
     0
   );
 
-  const customers = orders.length;
+  const chartData =
+    orders.map((order) => ({
+      order: order.id
+        .toString()
+        .slice(-4),
+      revenue: order.total
+    }));
 
   return (
     <Layout>
 
-      <h1 style={{ marginBottom: "30px" }}>
-        Commerce Analytics Dashboard
+      <h1>
+        Commerce Analytics
       </h1>
 
-      <div className="dashboard-grid">
+      <div
+        className="dashboard-grid"
+        style={{
+          marginTop: "30px"
+        }}
+      >
 
         <div className="dashboard-card">
-          <h3>Total Revenue</h3>
+          <h3>Revenue</h3>
           <h1>
-            ${revenue.toFixed(2)}
+            ₹{revenue}
           </h1>
         </div>
 
         <div className="dashboard-card">
           <h3>Orders</h3>
-          <h1>{orders.length}</h1>
-        </div>
-
-        <div className="dashboard-card">
-          <h3>Products Sold</h3>
-          <h1>{productsSold}</h1>
-        </div>
-
-        <div className="dashboard-card">
-          <h3>Customers</h3>
-          <h1>{customers}</h1>
+          <h1>
+            {orders.length}
+          </h1>
         </div>
 
       </div>
 
       <div className="chart">
 
-        <h2>Revenue Trend</h2>
+        <h2>
+          Revenue Analytics
+        </h2>
 
-        <div className="chart-bars">
+        <div
+          style={{
+            width: "100%",
+            height: 400
+          }}
+        >
 
-          <div
-            style={{
-              height: "120px"
-            }}
-          />
+          <ResponsiveContainer>
 
-          <div
-            style={{
-              height: "180px"
-            }}
-          />
+            <BarChart
+              data={chartData}
+            >
 
-          <div
-            style={{
-              height: "250px"
-            }}
-          />
+              <XAxis
+                dataKey="order"
+              />
 
-          <div
-            style={{
-              height: "220px"
-            }}
-          />
+              <YAxis />
 
-          <div
-            style={{
-              height: "300px"
-            }}
-          />
+              <Tooltip />
 
-          <div
-            style={{
-              height: "270px"
-            }}
-          />
+              <Bar
+                dataKey="revenue"
+              />
+
+            </BarChart>
+
+          </ResponsiveContainer>
 
         </div>
 
       </div>
 
-      <div className="analytics-section">
+      <div className="chart">
 
-        <h2>Top Products</h2>
-
-        <div className="top-products">
-
-          <div className="top-product-card">
-            <h3>Wireless Headphones</h3>
-            <p>Revenue Leader</p>
-          </div>
-
-          <div className="top-product-card">
-            <h3>Gaming Mouse</h3>
-            <p>High Conversion</p>
-          </div>
-
-          <div className="top-product-card">
-            <h3>Mechanical Keyboard</h3>
-            <p>Best Seller</p>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div
-        className="chart"
-        style={{
-          marginTop: "40px"
-        }}
-      >
-
-        <h2>Recent Orders</h2>
+        <h2>
+          Recent Orders
+        </h2>
 
         <table className="table">
 
           <thead>
-
             <tr>
-              <th>Order ID</th>
+              <th>ID</th>
               <th>Date</th>
               <th>Total</th>
+              <th>Status</th>
             </tr>
-
           </thead>
 
           <tbody>
 
-            {orders.map((order) => (
+            {orders.map(
+              (order) => (
+                <tr
+                  key={order.id}
+                >
+                  <td>
+                    {order.id}
+                  </td>
 
-              <tr key={order.id}>
+                  <td>
+                    {order.date}
+                  </td>
 
-                <td>
-                  {order.id}
-                </td>
+                  <td>
+                    ₹{order.total}
+                  </td>
 
-                <td>
-                  {order.date}
-                </td>
+                  <td>
+                    {
+                      order.status
+                    }
+                  </td>
 
-                <td>
-                  ${order.total}
-                </td>
-
-              </tr>
-
-            ))}
+                </tr>
+              )
+            )}
 
           </tbody>
 
