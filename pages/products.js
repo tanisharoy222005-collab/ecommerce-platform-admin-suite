@@ -1,220 +1,116 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Layout from "../components/Layout";
 import ProductCard from "../components/ProductCard";
-import productsData from "../data/products";
+import products from "../data/products";
 
 export default function Products() {
 
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("featured");
-  const [category, setCategory] = useState("all");
+  const [search,setSearch] =
+    useState("");
 
-  const categories = [
-    "all",
-    ...new Set(
-      productsData.map(
-        (p) => p.category
-      )
-    )
-  ];
+  const [sort,setSort] =
+    useState("default");
 
-  const products = useMemo(() => {
+  let filtered =
+    products.filter(product =>
+      product.name
+        .toLowerCase()
+        .includes(
+          search.toLowerCase()
+        )
+    );
 
-    let filtered = [...productsData];
+  if(sort === "low"){
+    filtered.sort(
+      (a,b)=>
+      a.price-b.price
+    );
+  }
 
-    if (category !== "all") {
-      filtered = filtered.filter(
-        (product) =>
-          product.category === category
-      );
-    }
+  if(sort === "high"){
+    filtered.sort(
+      (a,b)=>
+      b.price-a.price
+    );
+  }
 
-    if (search) {
-      filtered = filtered.filter(
-        (product) =>
-          product.name
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            ) ||
-          product.brand
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            )
-      );
-    }
+  if(sort === "rating"){
+    filtered.sort(
+      (a,b)=>
+      b.rating-a.rating
+    );
+  }
 
-    switch (sortBy) {
-
-      case "low":
-        filtered.sort(
-          (a, b) =>
-            a.price - b.price
-        );
-        break;
-
-      case "high":
-        filtered.sort(
-          (a, b) =>
-            b.price - a.price
-        );
-        break;
-
-      case "rating":
-        filtered.sort(
-          (a, b) =>
-            b.rating - a.rating
-        );
-        break;
-
-      case "sales":
-        filtered.sort(
-          (a, b) =>
-            b.sales - a.sales
-        );
-        break;
-
-      default:
-        break;
-    }
-
-    return filtered;
-
-  }, [
-    search,
-    sortBy,
-    category
-  ]);
+  if(sort === "sales"){
+    filtered.sort(
+      (a,b)=>
+      b.sales-a.sales
+    );
+  }
 
   return (
 
     <Layout>
 
-      <div
-        style={{
-          marginBottom: "40px"
-        }}
+      <h1>
+        Product Catalog
+      </h1>
+
+      <input
+        className="search-box"
+        placeholder=
+        "Search products..."
+        value={search}
+        onChange={(e)=>
+          setSearch(
+            e.target.value
+          )
+        }
+      />
+
+      <select
+        className="date-filter"
+        value={sort}
+        onChange={(e)=>
+          setSort(
+            e.target.value
+          )
+        }
       >
 
-        <h1>
-          Product Catalog
-        </h1>
+        <option value="default">
+          Sort By
+        </option>
 
-        <p
-          style={{
-            color: "#94a3b8",
-            marginTop: "10px"
-          }}
-        >
-          Browse products,
-          compare specifications,
-          and add items
-          to your cart.
-        </p>
+        <option value="low">
+          Price Low → High
+        </option>
 
-      </div>
+        <option value="high">
+          Price High → Low
+        </option>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "2fr 1fr 1fr",
-          gap: "15px",
-          marginBottom: "35px"
-        }}
-      >
+        <option value="rating">
+          Best Rated
+        </option>
 
-        <input
-          className="search-box"
-          placeholder="Search products..."
-          value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-        />
+        <option value="sales">
+          Best Selling
+        </option>
 
-        <select
-          className="search-box"
-          value={category}
-          onChange={(e) =>
-            setCategory(
-              e.target.value
-            )
-          }
-        >
-          {categories.map(
-            (cat) => (
-              <option
-                key={cat}
-                value={cat}
-              >
-                {cat}
-              </option>
-            )
-          )}
-        </select>
+      </select>
 
-        <select
-          className="search-box"
-          value={sortBy}
-          onChange={(e) =>
-            setSortBy(
-              e.target.value
-            )
-          }
-        >
-          <option value="featured">
-            Featured
-          </option>
-
-          <option value="low">
-            Price Low → High
-          </option>
-
-          <option value="high">
-            Price High → Low
-          </option>
-
-          <option value="rating">
-            Best Rated
-          </option>
-
-          <option value="sales">
-            Best Selling
-          </option>
-
-        </select>
-
-      </div>
-
-      <div
-        style={{
-          marginBottom: "20px",
-          color: "#94a3b8"
-        }}
-      >
-        Showing
-        {" "}
-        {products.length}
-        {" "}
-        products
-      </div>
+      <br /><br />
 
       <div className="grid">
 
-        {products.map(
-          (product) => (
-
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-
-          )
-        )}
+        {filtered.map(
+          product=>(
+          <ProductCard
+            key={product.id}
+            product={product}
+          />
+        ))}
 
       </div>
 
