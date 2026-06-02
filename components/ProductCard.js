@@ -1,13 +1,27 @@
-export default function ProductCard({ product }) {
+import { useStore } from "../context/StoreContext";
+
+export default function ProductCard({
+  product
+}) {
+  const { addToCart } = useStore();
+
   return (
     <div className="card">
-      <h3>{product.name}</h3>
+      <div className="card-content">
+        <h3>{product.name}</h3>
 
-      <p>{product.description}</p>
+        <p>{product.description}</p>
 
-      <h4>${product.price}</h4>
+        <h2>${product.price}</h2>
 
-      <button>Add to Cart</button>
+        <button
+          onClick={() =>
+            addToCart(product)
+          }
+        >
+          Add To Cart
+        </button>
+      </div>
     </div>
   );
 }
