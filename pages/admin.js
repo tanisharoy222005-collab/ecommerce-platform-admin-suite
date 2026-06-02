@@ -123,6 +123,9 @@ export default function Admin() {
           >
             Seeded with representative
             commerce data.
+            Connect a live backend
+            to enable real-time
+            reporting.
           </p>
 
         </div>
@@ -137,6 +140,7 @@ export default function Admin() {
             )
           }
         >
+
           <option value="7">
             Last 7 Days
           </option>
@@ -166,13 +170,16 @@ export default function Admin() {
           className=
           "dashboard-card"
         >
+
           <h3>
             Revenue
           </h3>
 
           <h1>
             $
-            {revenue.toFixed(0)}
+            {revenue > 0
+              ? revenue.toFixed(0)
+              : "248,400"}
           </h1>
 
           <span
@@ -181,18 +188,22 @@ export default function Admin() {
           >
             +18.4%
           </span>
+
         </div>
 
         <div
           className=
           "dashboard-card"
         >
+
           <h3>
             Orders
           </h3>
 
           <h1>
-            {orders.length}
+            {orders.length > 0
+              ? orders.length
+              : "12,450"}
           </h1>
 
           <span
@@ -201,12 +212,14 @@ export default function Admin() {
           >
             +12.8%
           </span>
+
         </div>
 
         <div
           className=
           "dashboard-card"
         >
+
           <h3>
             Conversion
           </h3>
@@ -221,12 +234,14 @@ export default function Admin() {
           >
             +0.4%
           </span>
+
         </div>
 
         <div
           className=
           "dashboard-card"
         >
+
           <h3>
             Refund Rate
           </h3>
@@ -241,6 +256,7 @@ export default function Admin() {
           >
             -0.2%
           </span>
+
         </div>
 
       </div>
@@ -277,6 +293,7 @@ export default function Admin() {
               type="monotone"
               dataKey="sales"
               stroke="#3b82f6"
+              strokeWidth={3}
             />
 
           </LineChart>
@@ -306,16 +323,19 @@ export default function Admin() {
               <Pie
                 data={paymentData}
                 dataKey="value"
+                outerRadius={100}
               >
 
                 {paymentData.map(
                   (entry,index)=>(
+
                   <Cell
                     key={index}
                     fill={
                       colors[index]
                     }
                   />
+
                 ))}
 
               </Pie>
@@ -326,12 +346,22 @@ export default function Admin() {
 
           </ResponsiveContainer>
 
+          <div
+            style={{
+              marginTop:"15px",
+              color:"#94a3b8"
+            }}
+          >
+            UPI 62% • Card 23% •
+            Wallet 11% • Bank 4%
+          </div>
+
         </div>
 
         <div className="chart">
 
           <h2>
-            Funnel
+            Sales Funnel
           </h2>
 
           <ResponsiveContainer
@@ -363,14 +393,13 @@ export default function Admin() {
         </div>
 
       </div>
-
       <div
         className=
         "insight-card"
       >
 
         <h3>
-          AI Insights
+          AI Generated Insights
         </h3>
 
         <ul>
@@ -397,7 +426,191 @@ export default function Admin() {
             0.4% MoM.
           </li>
 
+          <li>
+            Mobile traffic
+            contributes 67%
+            of overall sessions.
+          </li>
+
         </ul>
+
+      </div>
+
+      <div
+        className="dashboard-grid"
+        style={{
+          marginTop:"30px"
+        }}
+      >
+
+        <div className="chart">
+
+          <h2>
+            Geographic Revenue
+          </h2>
+
+          <table
+            className="table"
+          >
+
+            <thead>
+
+              <tr>
+                <th>
+                  Region
+                </th>
+
+                <th>
+                  Revenue Share
+                </th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>
+                  United States
+                </td>
+                <td>
+                  42%
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  Canada
+                </td>
+                <td>
+                  21%
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  United Kingdom
+                </td>
+                <td>
+                  18%
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  Germany
+                </td>
+                <td>
+                  10%
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  Other
+                </td>
+                <td>
+                  9%
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div className="chart">
+
+          <h2>
+            Inventory Alerts
+          </h2>
+
+          <table
+            className="table"
+          >
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Product
+                </th>
+
+                <th>
+                  Stock
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr>
+
+                <td>
+                  Gaming Mouse
+                </td>
+
+                <td>
+                  8
+                </td>
+
+                <td
+                  className=
+                  "low-stock"
+                >
+                  Low Stock
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>
+                  4K Monitor
+                </td>
+
+                <td>
+                  5
+                </td>
+
+                <td
+                  className=
+                  "out-stock"
+                >
+                  Critical
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>
+                  Mechanical Keyboard
+                </td>
+
+                <td>
+                  14
+                </td>
+
+                <td>
+                  Healthy
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
 
@@ -438,27 +651,87 @@ export default function Admin() {
 
           <tbody>
 
-            {orders.map(
-              (order)=>(
-              <tr
-                key={order.id}
-              >
+            {orders.length > 0 ? (
 
-                <td>
-                  {order.id}
-                </td>
+              orders.map(
+                (order)=>(
 
-                <td>
-                  {order.date}
-                </td>
+                <tr
+                  key={order.id}
+                >
 
-                <td>
-                  $
-                  {order.total}
-                </td>
+                  <td>
+                    {order.id}
+                  </td>
 
-              </tr>
-            ))}
+                  <td>
+                    {order.date}
+                  </td>
+
+                  <td>
+                    $
+                    {order.total}
+                  </td>
+
+                </tr>
+
+              ))
+
+            ) : (
+
+              <>
+
+                <tr>
+                  <td>
+                    ORD-10342
+                  </td>
+                  <td>
+                    02 Jun 2026
+                  </td>
+                  <td>
+                    $399
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    ORD-10341
+                  </td>
+                  <td>
+                    02 Jun 2026
+                  </td>
+                  <td>
+                    $129
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    ORD-10340
+                  </td>
+                  <td>
+                    01 Jun 2026
+                  </td>
+                  <td>
+                    $99
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    ORD-10339
+                  </td>
+                  <td>
+                    01 Jun 2026
+                  </td>
+                  <td>
+                    $458
+                  </td>
+                </tr>
+
+              </>
+
+            )}
 
           </tbody>
 
@@ -467,5 +740,7 @@ export default function Admin() {
       </div>
 
     </Layout>
+
   );
+
 }
