@@ -1,176 +1,391 @@
-import { useState } from "react";
+import {
+  useState
+} from "react";
+
 import Layout from "../components/Layout";
-import { useStore } from "../context/StoreContext";
+
+import {
+  useStore
+} from "../context/StoreContext";
+
+import {
+  useRouter
+} from "next/router";
 
 export default function Checkout() {
 
-  const { cart } = useStore();
+  const router = useRouter();
 
-  const [paymentMethod, setPaymentMethod] =
-    useState("upi");
+  const { cart } =
+    useStore();
 
-  const subtotal = cart.reduce(
-    (sum, item) =>
-      sum + item.price * item.quantity,
-    0
-  );
+  const [form, setForm] =
+    useState({
 
-  const tax = subtotal * 0.1;
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      paymentMethod:
+        "upi"
 
-  const total = subtotal + tax;
+    });
 
-  const proceedToPayment = () => {
+  const [errors, setErrors] =
+    useState({});
 
-    if (paymentMethod === "upi") {
-      window.location.href =
-        `/payment?method=upi&amount=${total}`;
-    }
+  const subtotal =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        item.price *
+          item.quantity,
+      0
+    );
 
-    if (paymentMethod === "card") {
-      window.location.href =
-        `/payment?method=card&amount=${total}`;
-    }
+  const tax =
+    subtotal * 0.10;
+
+  const total =
+    subtotal + tax;
+
+  const validate = () => {
+
+    const newErrors = {};
+
+    if (!form.name)
+      newErrors.name =
+        "Name required";
+
+    if (
+      !form.email ||
+      !form.email.includes("@")
+    )
+      newErrors.email =
+        "Valid email required";
+
+    if (
+      !form.phone ||
+      form.phone.length < 10
+    )
+      newErrors.phone =
+        "Valid phone required";
+
+    if (!form.address)
+      newErrors.address =
+        "Address required";
+
+    setErrors(
+      newErrors
+    );
+
+    return (
+      Object.keys(
+        newErrors
+      ).length === 0
+    );
   };
 
+  const proceedPayment =
+    () => {
+
+      if (
+        cart.length === 0
+      ) {
+        alert(
+          "Cart is empty"
+        );
+        return;
+      }
+
+      if (!validate())
+        return;
+
+      router.push(
+        `/payment?method=${form.paymentMethod}&amount=${total}`
+      );
+    };
+
   return (
+
     <Layout>
+
+      <div
+        className="checkout-progress"
+      >
+
+        <div>
+          ✓ Cart
+        </div>
+
+        <div>
+          ✓ Checkout
+        </div>
+
+        <div>
+          Payment
+        </div>
+
+        <div>
+          Complete
+        </div>
+
+      </div>
 
       <h1
         style={{
-          marginBottom: "30px"
+          marginBottom:
+            "30px"
         }}
       >
         Secure Checkout
       </h1>
 
-      <div className="checkout-grid">
+      <div
+        className="checkout-grid"
+      >
 
-        <div className="checkout-form">
+        <div
+          className="checkout-form"
+        >
 
-          <h2>Customer Details</h2>
+          <h2>
+            Customer Details
+          </h2>
 
           <input
             placeholder="Full Name"
+            value={
+              form.name
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                name:
+                  e.target
+                    .value
+              })
+            }
           />
 
-          <input
-            placeholder="Email Address"
-          />
+          {errors.name && (
+            <small
+              className="error"
+            >
+              {
+                errors.name
+              }
+            </small>
+          )}
 
           <input
-            placeholder="Phone Number"
+            placeholder="Email"
+            value={
+              form.email
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                email:
+                  e.target
+                    .value
+              })
+            }
           />
 
+          {errors.email && (
+            <small
+              className="error"
+            >
+              {
+                errors.email
+              }
+            </small>
+          )}
+
           <input
-            placeholder="Shipping Address"
+            placeholder="Phone"
+            value={
+              form.phone
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                phone:
+                  e.target
+                    .value
+              })
+            }
           />
+
+          {errors.phone && (
+            <small
+              className="error"
+            >
+              {
+                errors.phone
+              }
+            </small>
+          )}
+
+          <input
+            placeholder="Address"
+            value={
+              form.address
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address:
+                  e.target
+                    .value
+              })
+            }
+          />
+
+          {errors.address && (
+            <small
+              className="error"
+            >
+              {
+                errors.address
+              }
+            </small>
+          )}
 
           <h2
             style={{
-              marginTop: "30px"
+              marginTop:
+                "30px"
             }}
           >
             Payment Method
           </h2>
 
           <div
-            style={{
-              marginTop: "20px"
-            }}
+            className="payment-options"
           >
 
-            <label
-              style={{
-                display: "block",
-                marginBottom: "15px"
-              }}
-            >
-              <input
-                type="radio"
-                checked={
-                  paymentMethod ===
-                  "upi"
-                }
-                onChange={() =>
-                  setPaymentMethod(
+            <div
+              className={
+                form.paymentMethod ===
+                "upi"
+                  ? "payment-card active-payment"
+                  : "payment-card"
+              }
+              onClick={() =>
+                setForm({
+                  ...form,
+                  paymentMethod:
                     "upi"
-                  )
-                }
-              />
-
-              {" "}
-              UPI Payment
-            </label>
-
-            <label
-              style={{
-                display: "block"
-              }}
+                })
+              }
             >
-              <input
-                type="radio"
-                checked={
-                  paymentMethod ===
-                  "card"
-                }
-                onChange={() =>
-                  setPaymentMethod(
-                    "card"
-                  )
-                }
-              />
+              UPI
+            </div>
 
-              {" "}
-              Credit / Debit Card
-            </label>
+            <div
+              className={
+                form.paymentMethod ===
+                "card"
+                  ? "payment-card active-payment"
+                  : "payment-card"
+              }
+              onClick={() =>
+                setForm({
+                  ...form,
+                  paymentMethod:
+                    "card"
+                })
+              }
+            >
+              Credit/Debit Card
+            </div>
 
           </div>
 
         </div>
 
-        <div className="checkout-summary">
+        <div
+          className="checkout-summary"
+        >
 
-          <h2>Order Summary</h2>
+          <h2>
+            Order Summary
+          </h2>
 
-          <div className="summary-row">
-            <span>Items</span>
+          <div
+            className="summary-row"
+          >
             <span>
-              {cart.length}
+              Items
+            </span>
+
+            <span>
+              {
+                cart.length
+              }
             </span>
           </div>
 
-          <div className="summary-row">
-            <span>Subtotal</span>
+          <div
+            className="summary-row"
+          >
             <span>
-              ₹{subtotal.toFixed(2)}
+              Subtotal
+            </span>
+
+            <span>
+              $
+              {subtotal.toFixed(
+                2
+              )}
             </span>
           </div>
 
-          <div className="summary-row">
-            <span>Tax</span>
+          <div
+            className="summary-row"
+          >
             <span>
-              ₹{tax.toFixed(2)}
+              Tax
+            </span>
+
+            <span>
+              $
+              {tax.toFixed(
+                2
+              )}
             </span>
           </div>
 
-          <div className="summary-row total-row">
-            <span>Total</span>
+          <div
+            className="summary-row total-row"
+          >
             <span>
-              ₹{total.toFixed(2)}
+              Total
+            </span>
+
+            <span>
+              $
+              {total.toFixed(
+                2
+              )}
             </span>
           </div>
 
           <button
             className="primary-btn"
             style={{
-              width: "100%",
-              marginTop: "20px"
+              width:
+                "100%",
+              marginTop:
+                "20px"
             }}
             onClick={
-              proceedToPayment
+              proceedPayment
             }
           >
-            Proceed To Payment
+            Continue To Payment
           </button>
 
         </div>
