@@ -3,15 +3,16 @@ import { useStore } from "../context/StoreContext";
 import Link from "next/link";
 
 export default function Cart() {
-  const { cart } = useStore();
+  const { cart, increaseQty, decreaseQty, removeFromCart } = useStore();
 
+  // FIXED: subtotal now uses quantity
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price,
+    (sum, item) =>
+      sum + item.price * (item.quantity || 1),
     0
   );
 
   const tax = subtotal * 0.1;
-
   const total = subtotal + tax;
 
   return (
@@ -23,6 +24,7 @@ export default function Cart() {
 
       <div className="cart-layout">
 
+        {/* LEFT SIDE - CART ITEMS */}
         <div>
 
           {cart.length === 0 ? (
@@ -37,31 +39,63 @@ export default function Cart() {
               >
                 <h3>{item.name}</h3>
 
-                <p>
-                  {item.description}
-                </p>
+                <p>{item.description}</p>
 
                 <div className="price">
                   ${item.price}
                 </div>
+
+                {/* QUANTITY CONTROLS */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    alignItems: "center",
+                    marginTop: "10px"
+                  }}
+                >
+                  <button onClick={() => decreaseQty(item.id)}>
+                    −
+                  </button>
+
+                  <span>
+                    {item.quantity || 1}
+                  </span>
+
+                  <button onClick={() => increaseQty(item.id)}>
+                    +
+                  </button>
+
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    style={{
+                      marginLeft: "10px",
+                      color: "red"
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+
               </div>
             ))
           )}
 
         </div>
 
+        {/* RIGHT SIDE - SUMMARY */}
         <div className="order-summary">
 
           <h2>Order Summary</h2>
 
           <div className="summary-row">
             <span>Items</span>
-            <span>{cart.length}</span>
+            <span>{cart.reduce((sum, item) => sum + (item.quantity || 1), 0)}</span>
           </div>
 
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>${subtotal}</span>
+            <span>${subtotal.toFixed(2)}</span>
           </div>
 
           <div className="summary-row">
