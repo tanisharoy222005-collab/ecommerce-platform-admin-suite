@@ -19,8 +19,20 @@ export default function Payment() {
 
     if (method === "upi") {
 
+      alert(
+        "Launching UPI Payment..."
+      );
+
       window.location.href =
-        `upi://pay?pa=demo@upi&pn=CommerceOS&am=${amount}&cu=INR`;
+        `upi://pay?pa=commerceos@upi&pn=CommerceOS&am=${amount}&cu=USD`;
+
+      setTimeout(() => {
+
+        router.push(
+          `/order-success?amount=${amount}`
+        );
+
+      }, 1500);
 
       return;
     }
@@ -29,21 +41,35 @@ export default function Payment() {
       "Card Payment Successful"
     );
 
-    window.location.href =
-      "/admin";
+    router.push(
+      `/order-success?amount=${amount}`
+    );
   };
 
   return (
+
     <Layout>
 
+      <div className="checkout-progress">
+
+        <div>✓ Cart</div>
+
+        <div>✓ Checkout</div>
+
+        <div>✓ Payment</div>
+
+        <div>Complete</div>
+
+      </div>
+
       <h1>
-        Payment Gateway
+        Secure Payment Gateway
       </h1>
 
       <div
         className="checkout-summary"
         style={{
-          maxWidth: "650px",
+          maxWidth: "700px",
           marginTop: "30px"
         }}
       >
@@ -52,38 +78,44 @@ export default function Payment() {
           Payment Details
         </h2>
 
-        <p
+        <div
           style={{
-            marginTop: "15px"
+            marginTop: "20px"
           }}
         >
-          Method:
-          {" "}
-          <strong>
-            {method?.toUpperCase()}
-          </strong>
-        </p>
 
-        <p
-          style={{
-            marginTop: "10px"
-          }}
-        >
-          Amount:
-          {" "}
-          <strong>
-            ₹{amount}
-          </strong>
-        </p>
+          <p>
+            Method:
+            {" "}
+            <strong>
+              {method?.toUpperCase()}
+            </strong>
+          </p>
+
+          <p
+            style={{
+              marginTop: "10px"
+            }}
+          >
+            Amount:
+            {" "}
+            <strong>
+              ${amount}
+            </strong>
+          </p>
+
+        </div>
 
         {method === "card" && (
 
-          <>
+          <div
+            style={{
+              marginTop: "25px"
+            }}
+          >
+
             <input
               placeholder="Card Number"
-              style={{
-                marginTop: "25px"
-              }}
             />
 
             <input
@@ -91,48 +123,60 @@ export default function Payment() {
             />
 
             <input
-              placeholder="MM / YY"
+              placeholder="Expiry Date"
             />
 
             <input
               placeholder="CVV"
             />
-          </>
+
+          </div>
 
         )}
 
         {method === "upi" && (
 
-          <>
-            <div
+          <div
+            className="payment-method-box"
+          >
+
+            <h3>
+              Select UPI App
+            </h3>
+
+            <ul>
+
+              <li>
+                Google Pay
+              </li>
+
+              <li>
+                PhonePe
+              </li>
+
+              <li>
+                Paytm
+              </li>
+
+              <li>
+                BHIM
+              </li>
+
+            </ul>
+
+            <p
               style={{
-                background:
-                  "#1e293b",
-                padding: "20px",
-                borderRadius:
-                  "12px",
-                marginTop: "25px"
+                marginTop: "15px"
               }}
             >
-              Supported Apps
+              UPI ID:
+              {" "}
+              <strong>
+                commerceos@upi
+              </strong>
+            </p>
 
-              <br /><br />
-
-              Google Pay
-
-              <br />
-
-              PhonePe
-
-              <br />
-
-              Paytm
-
-              <br />
-
-              BHIM
-            </div>
-          </>
+          </div>
 
         )}
 
@@ -146,11 +190,12 @@ export default function Payment() {
             handlePayment
           }
         >
-          Pay ₹{amount}
+          Pay ${amount}
         </button>
 
       </div>
 
     </Layout>
+
   );
 }
