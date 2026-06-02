@@ -3,9 +3,14 @@ import { useStore } from "../context/StoreContext";
 import Link from "next/link";
 
 export default function Cart() {
-  const { cart, increaseQty, decreaseQty, removeFromCart } = useStore();
+  const {
+    cart,
+    increaseQty,
+    decreaseQty,
+    removeFromCart,
+  } = useStore();
 
-  // FIXED: subtotal now uses quantity
+  // ✅ subtotal with quantity
   const subtotal = cart.reduce(
     (sum, item) =>
       sum + item.price * (item.quantity || 1),
@@ -17,7 +22,6 @@ export default function Cart() {
 
   return (
     <Layout>
-
       <h1 style={{ marginBottom: "30px" }}>
         Shopping Cart
       </h1>
@@ -32,10 +36,10 @@ export default function Cart() {
               Cart is empty
             </div>
           ) : (
-            cart.map((item, index) => (
+            cart.map((item) => (
               <div
                 className="cart-item"
-                key={index}
+                key={item.id}
               >
                 <h3>{item.name}</h3>
 
@@ -51,10 +55,14 @@ export default function Cart() {
                     display: "flex",
                     gap: "10px",
                     alignItems: "center",
-                    marginTop: "10px"
+                    marginTop: "10px",
                   }}
                 >
-                  <button onClick={() => decreaseQty(item.id)}>
+                  <button
+                    onClick={() =>
+                      decreaseQty(item.id)
+                    }
+                  >
                     −
                   </button>
 
@@ -62,21 +70,26 @@ export default function Cart() {
                     {item.quantity || 1}
                   </span>
 
-                  <button onClick={() => increaseQty(item.id)}>
+                  <button
+                    onClick={() =>
+                      increaseQty(item.id)
+                    }
+                  >
                     +
                   </button>
 
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() =>
+                      removeFromCart(item.id)
+                    }
                     style={{
                       marginLeft: "10px",
-                      color: "red"
+                      color: "red",
                     }}
                   >
                     Remove
                   </button>
                 </div>
-
               </div>
             ))
           )}
@@ -90,22 +103,35 @@ export default function Cart() {
 
           <div className="summary-row">
             <span>Items</span>
-            <span>{cart.reduce((sum, item) => sum + (item.quantity || 1), 0)}</span>
+            <span>
+              {cart.reduce(
+                (sum, item) =>
+                  sum +
+                  (item.quantity || 1),
+                0
+              )}
+            </span>
           </div>
 
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>
+              ${subtotal.toFixed(2)}
+            </span>
           </div>
 
           <div className="summary-row">
             <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>
+              ${tax.toFixed(2)}
+            </span>
           </div>
 
           <div className="summary-row total-row">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>
+              ${total.toFixed(2)}
+            </span>
           </div>
 
           <Link href="/checkout">
@@ -113,7 +139,7 @@ export default function Cart() {
               className="primary-btn"
               style={{
                 width: "100%",
-                marginTop: "20px"
+                marginTop: "20px",
               }}
             >
               Proceed To Checkout
@@ -123,7 +149,6 @@ export default function Cart() {
         </div>
 
       </div>
-
     </Layout>
   );
 }
