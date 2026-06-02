@@ -12,8 +12,10 @@ export function StoreProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  // Load from localStorage
+  // ✅ LOAD FROM LOCALSTORAGE (SAFE FOR NEXT.JS SSR)
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const savedCart =
       JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -24,17 +26,19 @@ export function StoreProvider({ children }) {
     setOrders(savedOrders);
   }, []);
 
-  // Save cart
+  // ✅ SAVE CART
   useEffect(() => {
+    if (typeof window === "undefined") return;
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Save orders
+  // ✅ SAVE ORDERS
   useEffect(() => {
+    if (typeof window === "undefined") return;
     localStorage.setItem("orders", JSON.stringify(orders));
   }, [orders]);
 
-  // ✅ ADD TO CART (with quantity support)
+  // 🟢 ADD TO CART
   const addToCart = (product) => {
     setCart((prev) => {
       const existing = prev.find(
@@ -62,7 +66,7 @@ export function StoreProvider({ children }) {
     });
   };
 
-  // 🟢 INCREASE QUANTITY (NEW)
+  // 🟢 INCREASE QTY
   const increaseQty = (id) => {
     setCart((prev) =>
       prev.map((item) =>
@@ -76,7 +80,7 @@ export function StoreProvider({ children }) {
     );
   };
 
-  // 🔴 DECREASE QUANTITY (NEW)
+  // 🔴 DECREASE QTY (auto-remove at 0)
   const decreaseQty = (id) => {
     setCart((prev) =>
       prev
@@ -88,18 +92,18 @@ export function StoreProvider({ children }) {
               }
             : item
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => (item.quantity || 0) > 0)
     );
   };
 
-  // ❌ REMOVE ITEM (unchanged)
+  // ❌ REMOVE ITEM
   const removeFromCart = (id) => {
     setCart((prev) =>
       prev.filter((item) => item.id !== id)
     );
   };
 
-  // CHECKOUT (unchanged but safe)
+  // 🟢 CHECKOUT (SAFE TOTAL CALCULATION)
   const checkout = () => {
     const order = {
       id: "ORD-" + Date.now(),
@@ -107,7 +111,9 @@ export function StoreProvider({ children }) {
       items: cart,
       total: cart.reduce(
         (sum, item) =>
-          sum + item.price * item.quantity,
+          sum +
+          item.price *
+            (item.quantity || 1),
         0
       ),
       status: "Processing"
